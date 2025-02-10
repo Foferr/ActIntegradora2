@@ -1,20 +1,28 @@
-name: Build con CMake y NMake
+name: Build with CMake
 
-on: [push, pull_request]  # Se ejecuta en cada push o PR
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
   build:
-    runs-on: windows-latest  # Usa Windows porque necesitamos Visual Studio
-
+    runs-on: ubuntu-latest
     steps:
-      - name: 📥 Clonar el repositorio
-        uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-      - name: 🛠️ Configurar Visual Studio
-        uses: ilammy/msvc-dev-cmd@v1  # Habilita Visual Studio para usar NMake
+      - name: Set up CMake
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake
 
-      - name: 🏗️ Configurar CMake
-        run: cmake -B build -S . -G "NMake Makefiles"
-
-      - name: 🚀 Compilar con NMake
-        run: cmake --build build --config Release
+      - name: Build project
+        run: |
+          mkdir build
+          cd build
+          cmake ..
+          cmake --build .
